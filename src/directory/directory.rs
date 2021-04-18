@@ -1,5 +1,6 @@
-use std::{fmt, io};
 use std::path::Path;
+use std::{fmt, io};
+
 use crate::{FileHandle, FileSlice, WritePtr};
 
 pub trait Directory: DirectoryClone + fmt::Debug + Send + Sync + 'static {
@@ -23,7 +24,7 @@ pub trait DirectoryClone {
 
 impl<T> DirectoryClone for T
 where
-T: 'static + Directory + Clone
+    T: 'static + Directory + Clone,
 {
     fn box_clone(&self) -> Box<dyn Directory> {
         Box::new(self.clone())

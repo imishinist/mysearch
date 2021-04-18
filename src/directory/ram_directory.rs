@@ -1,12 +1,11 @@
-
-use crate::{FileHandle, FileSlice, HasLen, Directory, WritePtr};
-use std::path::{PathBuf, Path};
 use std::collections::HashMap;
-use std::{io, fmt};
-use std::sync::{RwLock, Arc};
 use std::fmt::Formatter;
-use std::io::{Write, Cursor, Seek, SeekFrom, BufWriter};
+use std::io::{BufWriter, Cursor, Seek, SeekFrom, Write};
+use std::path::{Path, PathBuf};
+use std::sync::{Arc, RwLock};
+use std::{fmt, io};
 
+use crate::{Directory, FileHandle, FileSlice, HasLen, WritePtr};
 
 struct VecWriter {
     path: PathBuf,
@@ -29,7 +28,8 @@ impl VecWriter {
 impl Drop for VecWriter {
     fn drop(&mut self) {
         if !self.is_flushed {
-            panic!("You forgot to flush {:?} before its writer got Drop. Do not rely on dop.",
+            panic!(
+                "You forgot to flush {:?} before its writer got Drop. Do not rely on dop.",
                 self.path
             )
         }
@@ -84,10 +84,9 @@ impl InnerDirectory {
     }
 }
 
-
 #[derive(Clone, Default)]
 pub struct RAMDirectory {
-    fs: Arc<RwLock<InnerDirectory>>
+    fs: Arc<RwLock<InnerDirectory>>,
 }
 
 impl RAMDirectory {
@@ -121,7 +120,11 @@ impl Directory for RAMDirectory {
     }
 
     fn exists(&self, path: &Path) -> io::Result<bool> {
-        Ok(self.fs.read().map_err(|_e| io::ErrorKind::NotFound)?.exists(path))
+        Ok(self
+            .fs
+            .read()
+            .map_err(|_e| io::ErrorKind::NotFound)?
+            .exists(path))
     }
 
     fn open_write(&self, path: &Path) -> io::Result<WritePtr> {
@@ -137,9 +140,7 @@ impl Directory for RAMDirectory {
     }
 
     fn atomic_read(&self, path: &Path) -> io::Result<Vec<u8>> {
-        let bytes =
-        self.open_read(path)?
-            .read_bytes()?;
+        let bytes = self.open_read(path)?.read_bytes()?;
         Ok(bytes.as_slice().to_owned())
     }
 }
@@ -152,9 +153,9 @@ impl fmt::Debug for RAMDirectory {
 
 #[cfg(test)]
 mod tests {
-    use std::path::Path;
-    use crate::{RAMDirectory, Directory};
+    use crate::{Directory, RAMDirectory};
     use std::io::Write;
+    use std::path::Path;
 
     #[test]
     fn test_persist() {

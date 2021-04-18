@@ -1,13 +1,13 @@
 use std::fmt;
+use std::fmt::Formatter;
 use std::io;
-use std::ops::{Range, Deref};
+use std::ops::{Deref, Range};
 use std::sync::{Arc, Weak};
 
-use crate::directory::OwnedBytes;
 use stable_deref_trait::StableDeref;
-use crate::HasLen;
-use std::fmt::Formatter;
 
+use crate::directory::OwnedBytes;
+use crate::HasLen;
 
 pub type ArcBytes = Arc<dyn Deref<Target = [u8]> + Send + Sync + 'static>;
 pub type WeakBytes = Weak<dyn Deref<Target = [u8]> + Send + Sync + 'static>;
@@ -31,7 +31,8 @@ impl<T: Deref<Target = [u8]>> HasLen for T {
 
 impl<B> From<B> for FileSlice
 where
-B: StableDeref + Deref<Target = [u8]> + 'static + Send + Sync{
+    B: StableDeref + Deref<Target = [u8]> + 'static + Send + Sync,
+{
     fn from(bytes: B) -> Self {
         FileSlice::new(Box::new(OwnedBytes::new(bytes)))
     }

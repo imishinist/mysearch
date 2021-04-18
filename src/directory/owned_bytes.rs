@@ -1,13 +1,12 @@
-use std::sync::Arc;
-use std::ops::{Deref, Range};
-use std::{mem, fmt, io};
 use std::convert::TryInto;
 use std::fmt::Formatter;
+use std::ops::{Deref, Range};
+use std::sync::Arc;
+use std::{fmt, io, mem};
 
 use stable_deref_trait::StableDeref;
 
 use crate::FileHandle;
-
 
 #[derive(Clone)]
 pub struct OwnedBytes {
@@ -160,11 +159,10 @@ impl io::Read for OwnedBytes {
     }
 }
 
-
 #[cfg(test)]
 mod tests {
-    use std::io::{self, Read};
     use super::OwnedBytes;
+    use std::io::{self, Read};
 
     #[test]
     fn test_owned_bytes_debug() {
@@ -241,7 +239,7 @@ mod tests {
     #[test]
     fn test_owned_bytes_read_u64() -> io::Result<()> {
         let mut bytes = OwnedBytes::new(b"\0\xFF\xFF\xFF\xFF\xFF\xFF\xFF".as_ref());
-        assert_eq!(bytes.read_u64(), u64::MAX-255);
+        assert_eq!(bytes.read_u64(), u64::MAX - 255);
         assert_eq!(bytes.len(), 0);
         Ok(())
     }
@@ -268,5 +266,4 @@ mod tests {
             assert_eq!(right.as_slice(), b"");
         }
     }
-
 }
