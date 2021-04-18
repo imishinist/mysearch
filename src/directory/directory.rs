@@ -13,6 +13,8 @@ pub trait Directory: DirectoryClone + fmt::Debug + Send + Sync + 'static {
     fn exists(&self, path: &Path) -> io::Result<bool>;
 
     fn open_write(&self, path: &Path) -> io::Result<WritePtr>;
+
+    fn atomic_read(&self, path: &Path) -> io::Result<Vec<u8>>;
 }
 
 pub trait DirectoryClone {
